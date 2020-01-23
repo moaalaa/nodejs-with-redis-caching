@@ -72,6 +72,14 @@ const useCache = (req, res, next) => {
     })
 }
 
+app.get('/', (req, res) => {
+    res.json({
+        message: 'Hello',
+        usage: 'just go to /repos/:username',
+        notes: ':username is wild card change it with any github user name'
+    })
+})
+
 app.get('/repos/:username', useCache, getRepos)
 
 app.listen(PORT, () => console.log(`Server Listening on port ${PORT}!`));
