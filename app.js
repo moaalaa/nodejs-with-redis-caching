@@ -1,8 +1,10 @@
 // Modules
 const express   = require('express');
-const fetch     = require('node-fetch')
-const redis    = require('redis')
+const fetch     = require('node-fetch');
+const redis     = require('redis');
+const chalk     = require('chalk');
 
+// Configs
 const PORT          = process.env.PORT || 5000;
 const REDIS_PORT    = process.env.REDIS_PORT || 6379;
 const REDIS_KEY_PREFIX    = process.env.REDIS_KEY_PREFIX || 'node_app_with_redis_caching';
@@ -19,8 +21,7 @@ const setResponse = (username, repos) => {
 // Make Request to github and get repos count
 const getRepos = async (req, res) => {
     try {
-        console.log('here');
-        console.log('App: Fetching Data!');
+        console.log(chalk.cyan('App: Fetching Data!'));
 
         const { username } = req.params;
 
@@ -32,9 +33,9 @@ const getRepos = async (req, res) => {
 
         const cache_key = `${REDIS_KEY_PREFIX}_${username}`;
 
-        console.log('App: Data Fetched!');
+        console.log(chalk.greenBright('App: Data Fetched!'));
 
-        console.log(`App: Setting New Cache with key ${cache_key}!`);
+        console.log(chalk.cyan(`App: Setting New Cache with key ${cache_key}!`));
 
         // Set Data To Redis For Caching
         // "setex" putting data with expiration
@@ -61,6 +62,8 @@ const useCache = (req, res, next) => {
         // If Repos Count Is Not Null (Exists)
         if (repos_count !== null) {
             // Send the proper response
+            console.log(chalk.green('App: Retrieving From Cache'));
+            
             res.send(setResponse(username, repos_count))
         } else {
             // Else stop the function and move one "Middleware are very useful"
